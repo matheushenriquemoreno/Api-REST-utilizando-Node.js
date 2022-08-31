@@ -3,7 +3,10 @@ import livros from "../models/Livro.js";
 class livroController {
 
     static listarLivros = (req, res) => {
-     livros.find((erro, livros) => {
+     
+     livros.find()
+     .populate('Autor')
+     .exec((erro, livros) => {
             console.log(erro)
             res.status(200).json(livros)
         });
@@ -23,7 +26,6 @@ class livroController {
         });
     }
 
-
     static atualizarLivro = (req, res) => {
         const { id } = req.params
 
@@ -40,16 +42,39 @@ class livroController {
 
         const { id } = req.params; 
 
-        livros.findById(id, (erro, livro) =>{
+        livros.findById(id)
+        .populate('Autor', 'nome')
+        .exec((erro, livro) =>{
             if(erro){
                 res.status(400).send({message: `${erro.message} - Livro não encontrado`})
             }else{
                 res.status(200).send(livro)
             }
         })
-
     }
 
+    static excluirLivro = (req, res) => {
+        const id =  req.params.id;
+
+        livros.findByIdAndDelete(id, (erro) => {
+            if(!erro){
+                res.status(200).send({message: "Livro foi removido com sucesso"})
+            }
+            else{
+                res.status(500).send({menssage: erro.menssage})
+            }
+        })
+    }
+
+    static listarLivrosEditora = (req, res) => {
+        const editora = req.query.editora
+
+        livros.find({'Editora': editora}, {})
+        .populate('Autor')
+        .exec((erro, livros) =>{
+            res.status(200).send(livros);
+        });
+    }
 
 
 }
