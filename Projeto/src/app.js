@@ -1,27 +1,21 @@
 import express from "express"
+import db from "./config/dbConnect.js"
+import livros from "./models/Livro.js"
+import routes from "./routes/index.js"
+
+/* Criando coneção com o banco */
+db.on("error", console.log.bind(console, 'Erro de conexão'));
+db.once("open", () => {
+    console.log("conexão com o banco executada com sucesso")
+})
 
 const app = express();
 
 app.use(express.json()); // informo que as requicições que vão chegar vai ser com o formato Json
 
-const livros = [
-    {
-        id:1, 
-        titulo: "Senhor dos aneis"
-    },
-    {
-        id: 2, 
-        titulo: "o Hobbit"
-    }
-]
 
-app.get('/', (requisicao, reposta) => {
-reposta.status(200).send('CursoNode')
-})
+routes(app);
 
-app.get('/Livros' ,(req, resposta) => {
-    resposta.status(200).json(livros)
-})
 
 app.get('/livros/:id', (req, resp) =>{
 
